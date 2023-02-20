@@ -9,7 +9,7 @@ const { Node } = require('hyperbee/lib/messages.js');
 const {default: installExtension,  REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 const NODE_ENV = process.env.NODE_ENV
 
-const key = '325d3cd48901941530b60a7bf36b3d67c4b15f384e081dae45efd1b5d33dce01'
+const key = 'eb262ad276d9a2951a4e89be90c6dcd4150cc34af32433464485b3d8b30fd07a'
 
 const conns = [];
 
@@ -58,17 +58,37 @@ const createWindow = async () => {
     ? window.loadURL('http://localhost:3000')
     : window.loadFile(path.join(__dirname) + '/public/index.html')
 
+    core.on('append', () => {
+      const seq = core.length - 1;
+      core.get(seq).then((block) => {
+        const buffer = Node.decode(block)
+        const data = JSON.parse(buffer.value)
+        const arr = []
+        arr.push(data);
+        window.webContents.send("contract:list", arr);
+      });
+    });
+
+    
+
     ipcMain.on('contract:add', async (event, message) => {
         // console.log("message", message);
         for (const conn of conns) {
           conn.write(`contractAdd${message}`);
         }
       });
-      ipcMain.on('set-title', (event, title) => {
-        const webContents = event.sender
-        const win = BrowserWindow.fromWebContents(webContents)
-        win.setTitle(title)
+    ipcMain.on('contract:read',async (event, title) => {
+      const oldValue = []
+      for await (const { key, value } of bee.createReadStream()) {
+        console.log("value", JSON.parse(JSON.parse(value)));
+        oldValue.push(JSON.parse(JSON.parse(value)))
+      }
+      console.log("oldValue", oldValue);
+      oldValue.forEach((c)=> {
+        console.log(c);
       })
+      window.webContents.send("contract:list", oldValue);
+    })
 }
 
 app.whenReady().then(() => {

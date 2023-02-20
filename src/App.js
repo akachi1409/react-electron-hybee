@@ -5,7 +5,6 @@ import Homepage from './components/Homepage/Homepage';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function App() {
-  console.log("----", window.electronAPI.setTitle("title"))
   return (
     <Router>
       <Routes>

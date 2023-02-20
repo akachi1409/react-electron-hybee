@@ -13,6 +13,7 @@ function Homepage() {
   const [selectedId, setSelectedId] = useState(0);
   const [selectedContact, setSelectedContact] = useState({});
   const [contacts, setContacts] = useState([]);
+  const [firstLoad, setFirstLoad] = useState(true);
 
   const openModal = () => {
     setOpenAddModal(true);
@@ -34,11 +35,18 @@ function Homepage() {
     setOpenEditModal(false);
   };
 
+  useEffect(()=>{
+    if (firstLoad){
+      window.electronAPI.readContract();
+    }
+  },[firstLoad])
+
   useEffect(()=> {
-    // window.electron.ipcRenderer.listContract( (event, data) => {
-    //   console.log("--------------------------------data", data)
-    //   setContacts(data)
-    // });
+    window.electronAPI.listContract( (event, data) => {
+      // setContacts([...contacts, data])
+      console.log('ssl',data);
+      setContacts(data);
+    });
   }, [])
   
   return (
@@ -96,7 +104,9 @@ function Homepage() {
             </tr>
           </thead>
           <tbody>
-            {contacts.map((c) => (
+            {contacts.map((c) => {
+              console.log('A',c);
+              return(
               <tr key={c.id}>
                 <td>{c.firstName}</td>
                 <td>{c.lastName}</td>
@@ -107,7 +117,7 @@ function Homepage() {
                 <td>{c.phone}</td>
                 <td>{c.email}</td>
                 <td>{c.age}</td>
-                <td>
+                {/* <td>
                   <Button
                     variant="outline-primary"
                     onClick={editContact.bind(this, c)}
@@ -122,9 +132,9 @@ function Homepage() {
                   >
                     Delete
                   </Button>
-                </td>
-              </tr>
-            ))}
+                </td> */}
+              </tr>)
+})}
           </tbody>
         </Table>
       </div>
