@@ -43,11 +43,17 @@ function Homepage() {
 
   useEffect(()=> {
     window.electronAPI.listContract( (event, data) => {
-      // setContacts([...contacts, data])
-      console.log('ssl',data);
+      // console.log('ssl',data);
       setContacts(data);
     });
   }, [])
+
+  useEffect(()=> {
+    window.electronAPI.appendContract( (event, data) => {
+      console.log('ssl',data);
+      setContacts((contacts) => [...contacts, data]);
+    });
+  },[])
   
   return (
     <div className="home-page" style={{ padding: '20px' }}>
@@ -61,6 +67,7 @@ function Homepage() {
             edit={false}
             onSave={closeModal.bind(this)}
             onCancelAdd={cancelAddModal}
+            closeModal={closeModal}
           />
         </Modal.Body>
       </Modal>
@@ -105,7 +112,6 @@ function Homepage() {
           </thead>
           <tbody>
             {contacts.map((c) => {
-              console.log('A',c);
               return(
               <tr key={c.id}>
                 <td>{c.firstName}</td>

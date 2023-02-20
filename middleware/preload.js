@@ -7,6 +7,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     readContract: (data)=> {
         ipcRenderer.send('contract:read');
     },
+    appendContract: (data)=> {
+        ipcRenderer.on("contract:append", data);
+    },
     listContract: (data) => {
         ipcRenderer.on("contract:list", data);
     },

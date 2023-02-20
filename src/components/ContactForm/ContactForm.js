@@ -15,6 +15,7 @@ function ContactForm({
     contact,
     onCancelAdd,
     onCancelEdit,
+    closeModal
   }) {
     const schema = yup.object({
       // firstName: yup.string().required('First name is required'),
@@ -71,6 +72,7 @@ function ContactForm({
         console.log("evt",typeof data);
       //   await addContact(evt);
       window.electronAPI.addContract( data);
+      closeModal();
       }
     };
     console.log("---gg")

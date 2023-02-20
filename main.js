@@ -63,13 +63,11 @@ const createWindow = async () => {
       core.get(seq).then((block) => {
         const buffer = Node.decode(block)
         const data = JSON.parse(buffer.value)
-        const arr = []
-        arr.push(data);
-        window.webContents.send("contract:list", arr);
+        console.log("appended data", data);
+        window.webContents.send("contract:append", JSON.parse(data));
       });
     });
 
-    
 
     ipcMain.on('contract:add', async (event, message) => {
         // console.log("message", message);
@@ -83,10 +81,9 @@ const createWindow = async () => {
         console.log("value", JSON.parse(JSON.parse(value)));
         oldValue.push(JSON.parse(JSON.parse(value)))
       }
-      console.log("oldValue", oldValue);
-      oldValue.forEach((c)=> {
-        console.log(c);
-      })
+      // oldValue.forEach((c)=> {
+      //   console.log(c);
+      // })
       window.webContents.send("contract:list", oldValue);
     })
 }
