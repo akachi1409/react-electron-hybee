@@ -27,10 +27,16 @@ function Homepage() {
   const cancelAddModal = () => {
     setOpenAddModal(false);
   };
-  // const editContact = contact => {
-  //     setSelectedContact(contact);
-  //     setOpenEditModal(true);
-  //   };
+  const editContact = (contact) => {
+    console.log("contact", contact);
+    setSelectedContact(contact);
+    setOpenEditModal(true);
+  };
+
+  const deleteSelectedContact = (id)=> {
+    window.electronAPI.delContract(id);
+    closeModal();
+  }
   const cancelEditModal = () => {
     setOpenEditModal(false);
   };
@@ -50,7 +56,6 @@ function Homepage() {
 
   useEffect(()=> {
     window.electronAPI.appendContract( (event, data) => {
-      console.log('ssl',data);
       setContacts((contacts) => [...contacts, data]);
     });
   },[])
@@ -81,6 +86,7 @@ function Homepage() {
             onSave={closeModal.bind(this)}
             contact={selectedContact}
             onCancelEdit={cancelEditModal}
+            closeModal={closeModal}
           />
         </Modal.Body>
       </Modal>
@@ -123,10 +129,10 @@ function Homepage() {
                 <td>{c.phone}</td>
                 <td>{c.email}</td>
                 <td>{c.age}</td>
-                {/* <td>
+                <td>
                   <Button
                     variant="outline-primary"
-                    onClick={editContact.bind(this, c)}
+                    onClick={()=>editContact(c)}
                   >
                     Edit
                   </Button>
@@ -134,11 +140,11 @@ function Homepage() {
                 <td>
                   <Button
                     variant="outline-primary"
-                    onClick={deleteSelectedContact.bind(this, c.id)}
+                    onClick={()=>deleteSelectedContact(c.id)}
                   >
                     Delete
                   </Button>
-                </td> */}
+                </td>
               </tr>)
 })}
           </tbody>

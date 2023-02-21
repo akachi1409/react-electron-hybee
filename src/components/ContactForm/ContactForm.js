@@ -75,7 +75,7 @@ function ContactForm({
       closeModal();
       }
     };
-    console.log("---gg")
+    console.log("---gg", contact)
     return (
       <div className="form">
         <Formik

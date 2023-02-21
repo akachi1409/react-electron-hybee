@@ -9,7 +9,7 @@ const { Node } = require('hyperbee/lib/messages.js');
 const {default: installExtension,  REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 const NODE_ENV = process.env.NODE_ENV
 
-const key = 'eb262ad276d9a2951a4e89be90c6dcd4150cc34af32433464485b3d8b30fd07a'
+const key = '93f9f39bb14592acc35e892296554b5e2d76881ad7d14de0941dfe5c60def8cc'
 
 const conns = [];
 
@@ -42,18 +42,13 @@ const createWindow = async () => {
   
     await core.update();
     const window = new BrowserWindow({
-        width: 1080,
-        height: 720,
+        width: 1480,
+        height: 920,
         webPreferences: {
             preload: path.join(__dirname, './middleware/preload.js'),
         },
     })
     
-    // window.loadURL('http://localhost:3000')
-    if (NODE_ENV === 'development'){
-        console.log("node here")
-        // await installExtensions();
-    }
     NODE_ENV === 'development'
     ? window.loadURL('http://localhost:3000')
     : window.loadFile(path.join(__dirname) + '/public/index.html')
@@ -64,33 +59,35 @@ const createWindow = async () => {
         const buffer = Node.decode(block)
         const data = JSON.parse(buffer.value)
         console.log("appended data", data);
-        window.webContents.send("contract:append", JSON.parse(data));
+        window.webContents.send("contract:append", data);
       });
     });
 
+    core.on('truncate', ()=> {
+      console.log("--")
+    })
+
 
     ipcMain.on('contract:add', async (event, message) => {
-        // console.log("message", message);
         for (const conn of conns) {
           conn.write(`contractAdd${message}`);
         }
       });
+    ipcMain.on('contract:del', async (event, message) => {
+      console.log('message', message);
+      for (const conn of conns) {
+        conn.write(`contractDel${message}`);
+      }
+    });
     ipcMain.on('contract:read',async (event, title) => {
       const oldValue = []
       for await (const { key, value } of bee.createReadStream()) {
-        console.log("value", JSON.parse(JSON.parse(value)));
-        oldValue.push(JSON.parse(JSON.parse(value)))
+        oldValue.push(JSON.parse(value))
       }
-      // oldValue.forEach((c)=> {
-      //   console.log(c);
-      // })
       window.webContents.send("contract:list", oldValue);
     })
 }
 
 app.whenReady().then(() => {
-    installExtension(REACT_DEVELOPER_TOOLS)
-    .then((name) => console.log(`Added Extension:  ${name}`))
-        .catch((err) => console.log('An error occurred: ', err));
     createWindow()
 })

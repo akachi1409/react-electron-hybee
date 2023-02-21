@@ -4,6 +4,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     addContract:(data) =>{
         ipcRenderer.send('contract:add', data);
     },
+    delContract: (data) => {
+        ipcRenderer.send('contract:del', data);
+    },
     readContract: (data)=> {
         ipcRenderer.send('contract:read');
     },
